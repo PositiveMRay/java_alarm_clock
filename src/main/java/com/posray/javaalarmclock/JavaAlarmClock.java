@@ -2,9 +2,14 @@ package com.posray.javaalarmclock;
 
 //import static javax.xml.XMLConstants.XML_NS_PREFIX;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.Graphics;
+import java.awt.GraphicsDevice;
 import java.awt.Color;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -38,6 +43,9 @@ public class JavaAlarmClock extends JPanel
     int minEdge = Math.min(getWidth(), getHeight());
     int width = minEdge;
     int height = minEdge;
+
+    g.setColor(Color.BLACK);
+    g.fillRect(0, 0, width, height);
 
     // Draw clock face
     g.setColor(Color.BLACK);
@@ -80,8 +88,13 @@ public class JavaAlarmClock extends JPanel
     // Draw tick marks
     g.setColor(Color.WHITE);
     for (int i = 0; i < 60; i++) {
+        int innerRadius = 0;
         double angle = Math.toRadians(6 * i);
-        int innerRadius = Math.min(width, height) / 2 - 10;
+        if (i % 5 == 0) {
+            innerRadius = Math.min(width, height) / 2 - 20;
+        } else {
+            innerRadius = Math.min(width, height) / 2 - 10;
+        }
         int outerRadius = Math.min(width, height) / 2 - 5;
         int startX = (int) (centerX + innerRadius * Math.sin(angle));
         int startY = (int) (centerY - innerRadius * Math.cos(angle));
@@ -97,14 +110,29 @@ public class JavaAlarmClock extends JPanel
             System.out.println("Headless environment detected. Cannot run GUI application.");
             return;
         }
+
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice gd = ge.getDefaultScreenDevice();
+        
         JFrame frame = new JFrame("Java Alarm Clock");
+        if (gd.isFullScreenSupported()) {
+            gd.setFullScreenWindow(frame);
+        } else {
+            System.out.println("Fullscreen not supported");
+            JOptionPane.showMessageDialog(null, "Full Screen not Supported");
+            frame.setSize(400, 400);
+        }
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //frame.setBackground(Color.BLACK);
-        frame.setSize(400, 400);
         JavaAlarmClock clock = new JavaAlarmClock();
         frame.add(clock);
         frame.setVisible(true);
 
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+                gd.setFullScreenWindow(null);
+            }
+        });
         //System.out.println( "Hello Remote World!" );
         //System.out.println("The XML namespace prefix is: " + XML_NS_PREFIX);
     }
