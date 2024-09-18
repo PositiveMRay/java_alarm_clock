@@ -1,4 +1,5 @@
-Java Clock desktop application build using maven and the Swing framework.
+# Java Clock
+## Desktop application using maven and the Swing framework.
 
 This project has two profiles: jdk8 and jdk21.
 
