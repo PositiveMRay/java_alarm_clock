@@ -1,12 +1,16 @@
 package com.posray.javaalarmclock;
 
 import java.awt.GraphicsEnvironment;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.Graphics2D;
@@ -17,7 +21,7 @@ import java.util.TimerTask;
 import java.util.Calendar;
 import java.util.Date;
 
-public class JavaAlarmClock extends JPanel
+public class JavaAlarmClock extends JPanel implements KeyListener
 {
     private int hour;
     private int minute;
@@ -145,17 +149,14 @@ public class JavaAlarmClock extends JPanel
         GraphicsDevice gd = ge.getDefaultScreenDevice();
         
         JFrame frame = new JFrame("Java Alarm Clock");
-        if (gd.isFullScreenSupported()) {
-            gd.setFullScreenWindow(frame);
-        } else {
-            System.out.println("Fullscreen not supported");
-            JOptionPane.showMessageDialog(null, "Full Screen not Supported");
-            frame.setSize(400, 400);
-        }
+        frame.setSize(400, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JavaAlarmClock clock = new JavaAlarmClock();
         frame.add(clock);
+        frame.addKeyListener(clock);
         frame.setVisible(true);
+        frame.setFocusable(true);
+        frame.requestFocusInWindow();
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -163,5 +164,36 @@ public class JavaAlarmClock extends JPanel
                 gd.setFullScreenWindow(null);
             }
         });
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'keyTyped'");
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'keyPressed'");
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_F) {
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            GraphicsDevice gd = ge.getDefaultScreenDevice();
+
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            if (gd.isFullScreenSupported()) {
+                // Toggle fullscreen on the frame
+                gd.setFullScreenWindow(gd.getFullScreenWindow() == frame ? null : frame); 
+            } else {
+                System.out.println("Fullscreen not supported");
+                JOptionPane.showMessageDialog(null, "Full Screen not Supported");
+                // You might want to resize the frame here instead of the panel
+                frame.setSize(400, 400); 
+            }
+        }
     }
 }
