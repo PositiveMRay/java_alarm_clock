@@ -1,1 +1,4 @@
 java-alarm-clock.jar
+launch-it.sh
+target/*
+java_alarm_clock.jar
